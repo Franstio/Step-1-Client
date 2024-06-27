@@ -31,7 +31,7 @@ const apiClient = axios.create({
 
 
 const Home = () => {
-    const [apiTarget,setApiTarget] = useState('192.168.247.128');
+    const [apiTarget,setApiTarget] = useState('192.168.54.128');
     const [user, setUser] = useState(null);
     const [transaction, setTransaction] = useState([]);
     const [Scales4Kg, setScales4Kg] = useState({});
@@ -323,7 +323,7 @@ const Home = () => {
 
     const sendDataToStep2Timbangan = async () => {
         try {
-            const response = await apiClient.post(`http://pcs.local:5000/UpdateDataFromStep1`, {
+            const response = await apiClient.post(`http://2-PCL.local:5000/UpdateDataFromStep1`, {
                 name: containerName,
                 line: machine.line,
                 status: 'Waiting Dispose To Step 2 Bin',
