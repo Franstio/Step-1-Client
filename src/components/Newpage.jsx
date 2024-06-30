@@ -305,7 +305,7 @@ const Home = () => {
 
     const sendDataToStep2 = async () => {
         try {
-            const response = await apiClient.post(`http://pcs-02.local:5000/UpdateDataFromStep1`, {
+            const response = await apiClient.post(`http://PCL-10.local:5000/UpdateDataFromStep1`, {
                 name: containerName,
                 line: machine.line,
                 status: 'Waiting Dispose To Step 2',
