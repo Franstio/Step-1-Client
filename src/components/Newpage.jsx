@@ -410,7 +410,7 @@ const Home = () => {
             return;
         setBtnInfo(false);
         await saveDataTransaksi();
-//        await sendDataToStep2();
+        await sendDataToStep2();
         //await updatelinecontainer();
         cancelInfo();
     };
