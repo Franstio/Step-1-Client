@@ -31,7 +31,7 @@ const apiClient = axios.create({
 
 
 const Home = () => {
-    const [apiTarget,setApiTarget] = useState('192.168.54.128');
+    const [apiTarget,setApiTarget] = useState(/*'192.168.54.128'*/process.env.REACT_APP_PIDSG);
     const [user, setUser] = useState(null);
     const [transaction, setTransaction] = useState([]);
     const [Scales4Kg, setScales4Kg] = useState({});
@@ -67,6 +67,7 @@ const Home = () => {
     const [logindate, setlogindate] = useState('');
     const [bottomLockHostData, setBottomLockData] = useState({ binId: '', hostname: '' });
     const [socket, setSocket] = useState(); // Sesuaikan dengan alamat server
+    const [btnInfo,setBtnInfo] = useState(true);
     const btnRef = useRef();
     const navigation = [
         { name: 'Dashboard', href: '#', current: false },
@@ -214,7 +215,7 @@ const Home = () => {
                 handleScan();
             else if (isFinalStep) {
                 handleScan2();
-                updatelinecontainer();
+                //updatelinecontainer();
                 //setIdbin(binDispose[0].id);
                 //setbinInd(binDispose[0].name);
                 
@@ -405,12 +406,16 @@ const Home = () => {
     };
     
     const handleCancelInfo = async () => {
+        if (!btnInfo)
+            return;
+        setBtnInfo(false);
         await saveDataTransaksi();
-        await sendDataToStep2();
-        await updatelinecontainer();
+//        await sendDataToStep2();
+        //await updatelinecontainer();
         cancelInfo();
     };
     const cancelInfo = ()=>{
+        setBtnInfo(true);
         setShowModalInfo(false);
         setUser(null);
         setContainer(null);
@@ -669,7 +674,7 @@ const Home = () => {
                                         <Typography variant="h4" align="center" gutterBottom>
                                             Data Tersimpan!</Typography>
                                         <div className="flex justify-center mt-5">
-                                            <button type="button"  ref={btnRef} onKeyDown={handleCancelInfo} onMouseDown={handleCancelInfo} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Oke</button>
+                                            <button type="button"  disabled={!btnInfo}  ref={btnRef} onKeyDown={handleCancelInfo} onMouseDown={handleCancelInfo} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Oke</button>
                                         </div>
                                     </form>
                                 </div>
