@@ -254,7 +254,6 @@ const Home = () => {
             console.log(error);
         }
     };  */
-
   const saveDataTransaksi = async () => {
         try {
             let binQr = machine.name;
@@ -273,6 +272,18 @@ const Home = () => {
                 binQr = parts.join('-'); 
             } else  {
                 console.log("No modification needed for idWaste:", container.idWaste);
+            }
+            try
+            {
+                const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${container.containerId}&bin_qr=${binQr}&bin=${binQr}`);
+                console.log(_res);
+                if (_res.status!=200)
+                    return;
+            }
+            catch(err)
+            {
+                alert("Transaksi terakhir sudah ada dan belum selesai");
+                console.log(err);
             }
             const result = await sendDataPanasonicServer(binQr);
             if (result ==null)
