@@ -280,24 +280,33 @@ const Home = () => {
                 alert("Error from Pidsg, cancelling operation");
                 return;
             }
-            const response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
-                payload: {
-                    badgeId: user.badgeId,
-                    idContainer: container.containerId,
-                    IdWaste: machine.IdWaste,
-                    bin_qr: binQr,
-                    status: 'Waiting Dispose To Step 2',
-                    idscraplog: result,
-                    bin: binQr
-                }
-            });
+            let response = undefined;
+            try
+            {
+                response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
+                    payload: {
+                        badgeId: user.badgeId,
+                        idContainer: container.containerId,
+                        IdWaste: machine.IdWaste,
+                        bin_qr: binQr,
+                        status: 'Waiting Dispose To Step 2',
+                        idscraplog: result,
+                        bin: binQr
+                    }
+                });
+            }
+            catch (err)
+            {
+                console.log(err);
+                return;   
+            }
             await getTransactionList();
     
-            if (response.status !== 200) {
+            if (response && response.status !== 200) {
                 console.log(response);
                 return;
             }
-            console.log(response)
+//            console.log(response)
         } catch (error) {
             console.log(error);
         }
