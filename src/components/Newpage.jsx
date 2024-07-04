@@ -179,7 +179,8 @@ const Home = () => {
                         setWaste(res.data.container.waste);
                         setmessage('');
                         setTypeCollection(res.data.container.type);
-                        setWastename(res.data.container.waste.name);
+                        setWastename(res.data.container.waste.name);                
+                        setwasteid(res.data.container.waste.name);
                         setScanData('');
                         setIsSubmitAllowed(false);
                         setContainer(res.data.container);
@@ -219,7 +220,6 @@ const Home = () => {
                 //setIdbin(binDispose[0].id);
                 //setbinInd(binDispose[0].name);
                 
-                setwasteid(wastenamebin.name);
                 setScanData('');
                 setShowModalInfo(true);
             }
