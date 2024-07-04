@@ -257,16 +257,15 @@ const Home = () => {
   const saveDataTransaksi = async () => {
         try {
             let binQr = machine.name;
-            if (machine.IdWaste === 1) {
+            if (container.IdWaste === 1) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'SP');
-                binQr = parts.join('-'); 
-                
-            } else if (machine.IdWaste === 2) {
+                binQr = parts.join('-');
+            } else if (container.IdWaste === 2) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'SD'); 
                 binQr = parts.join('-'); 
-            } else if (machine.IdWaste === 3) {
+            } else if (container.IdWaste === 3) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'CR'); 
                 binQr = parts.join('-'); 
