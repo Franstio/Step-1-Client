@@ -297,7 +297,7 @@ const Home = () => {
                     payload: {
                         badgeId: user.badgeId,
                         idContainer: container.containerId,
-                        IdWaste: machine.IdWaste,
+                        IdWaste: container.IdWaste,
                         bin_qr: binQr,
                         status: 'Waiting Dispose To Step 2',
                         idscraplog: result,
