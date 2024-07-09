@@ -169,6 +169,7 @@ const Home = () => {
         apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData })
             .then((res) => {
                 if (res.data.error) {
+                    setScanData('');
                     alert(res.data.error);
                 } else {
                     if (res.data.container) {
@@ -200,7 +201,7 @@ const Home = () => {
                         //updatelinecontainer();
                         
                     } else {
-                        alert("Countainer not found");
+                        alert("Container not found");
                         setUser(null);
                         setContainer(null);
                         setContainerName(res.data.name || '');
