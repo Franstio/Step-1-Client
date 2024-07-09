@@ -103,6 +103,7 @@ const Home = () => {
         apiClient.post(`http://${process.env.REACT_APP_API}/ScanBadgeid`, { badgeId: scanData })
             .then(res => {
                 if (res.data.error) {
+                    setScanData('');
                     alert(res.data.error);
                 } else {
                     if (res.data.user) {
@@ -123,6 +124,7 @@ const Home = () => {
         apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData })
             .then((res) => {
                 if (res.data.error) {
+                    setScanData('');
                     alert(res.data.error);
                 } else {
                     if (res.data.machine) {
@@ -194,6 +196,7 @@ const Home = () => {
                         console.log(res.data.container.id)
                         setbinInd(res.data.container.name);
                         setFinalStep(true);
+                        setShowModalInfo(true);
                         //updatelinecontainer();
                         
                     } else {
@@ -204,6 +207,7 @@ const Home = () => {
                         setScanData('');
                         setIsSubmitAllowed(false);
                     }
+                    setScanData('');
                 }
             })
             .catch(err => console.error(err));
@@ -219,9 +223,6 @@ const Home = () => {
                 //updatelinecontainer();
                 //setIdbin(binDispose[0].id);
                 //setbinInd(binDispose[0].name);
-                
-                setScanData('');
-                setShowModalInfo(true);
             }
             else {
                 handleScan1();
