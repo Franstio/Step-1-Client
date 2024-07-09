@@ -326,7 +326,7 @@ const Home = () => {
 
     const sendDataToStep2 = async () => {
         try {
-            const response = await apiClient.post(`http://${process.env.REACT_APP_STEP2}/UpdateDataFromStep1`, {
+            const response = await apiClient.post(`http://${container.hostname}/UpdateDataFromStep1`, {
                 name: containerName,
                 line: machine.line,
                 status: 'Waiting Dispose To Step 2',
@@ -344,7 +344,7 @@ const Home = () => {
 
     const sendDataToStep2Timbangan = async () => {
         try {
-            const response = await apiClient.post(`http://${process.env.REACT_APP_STEP2}/UpdateDataFromStep1`, {
+            const response = await apiClient.post(`http://${container.hostname}/UpdateDataFromStep1`, {
                 name: containerName,
                 line: machine.line,
                 status: 'Waiting Dispose To Step 2 Bin',
