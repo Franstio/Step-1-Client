@@ -287,7 +287,7 @@ const Home = () => {
                 console.log(err);
             }
             const result = await sendDataPanasonicServer(binQr);
-            if (result ==null)
+            if (result ==null || result == 'Fail')
             {
                 alert("Error from Pidsg, cancelling operation");
                 return;
@@ -413,6 +413,11 @@ const Home = () => {
             });
             console.log(response)
             if (response.status != 200) {
+                if (response.error || response.err)
+                {
+                    alert("Fail saving to pidsg")
+                    return null;
+                }
                 console.log(response);
                 return;
             }
