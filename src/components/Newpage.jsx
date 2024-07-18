@@ -128,12 +128,10 @@ const Home = () => {
                     alert(res.data.error);
                 } else {
                     if (res.data.machine) {
-                        console.log(res.data.machine);
                         /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
                             alert("Waste Mismatch");
                             return;
                         }*/
-                        console.log(res.data.machine);
                         setWaste(res.data.machine.waste);
                         setmessage('');
                         setTypeCollection(res.data.machine.type);
@@ -144,9 +142,7 @@ const Home = () => {
                         setType(res.data.machine.type);
                         //setShowModalInfo(true);
                         setContainerName(res.data.machine.name)
-                        console.log(res.data.machine.waste.bin);
                         setBinDispose(res.data.machine.waste.bin);
-                        console.log(res.data.machine.waste);
                         setwastenamebin(res.data.machine.waste);
                         
                 
@@ -173,12 +169,10 @@ const Home = () => {
                     alert(res.data.error);
                 } else {
                     if (res.data.container) {
-                        console.log(res.data.container);
                         /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
                             alert("Waste Mismatch");
                             return;
                         }*/
-                        console.log(res.data.container);
                         setWaste(res.data.container.waste);
                         setmessage('');
                         setTypeCollection(res.data.container.type);
@@ -190,11 +184,8 @@ const Home = () => {
                         setType(res.data.container.type);
                         //setShowModalInfo(true);
                         setContainerName(res.data.container.name)
-                        console.log(res.data.container.waste.bin);
                         setBinDispose(res.data.container.waste.bin);
-                        console.log(res.data.container.waste);
                         setwastenamebin(res.data.container.waste)
-                        console.log(res.data.container.id)
                         setbinInd(res.data.container.name);
                         setFinalStep(true);
                         setShowModalInfo(true);
@@ -248,12 +239,10 @@ const Home = () => {
             }
             });
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
         }
         catch (error) {
-            console.log(error);
         }
     };  */
   const saveDataTransaksi = async () => {
@@ -272,19 +261,16 @@ const Home = () => {
                 parts.splice(2, 0, 'CR'); 
                 binQr = parts.join('-'); 
             } else  {
-                console.log("No modification needed for idWaste:", container.idWaste);
             }
             try
             {
                 const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${container.containerId}&bin_qr=${binQr}&bin=${binQr}`);
-                console.log(_res);
                 if (_res.status!=200)
                     return;
             }
             catch(err)
             {
                 alert("Transaksi terakhir sudah ada dan belum selesai");
-                console.log(err);
             }
             const result = await sendDataPanasonicServer(binQr);
             if (result ==null || result == 'Fail')
@@ -309,18 +295,14 @@ const Home = () => {
             }
             catch (err)
             {
-                console.log(err);
                 return;   
             }
             await getTransactionList();
     
             if (response && response.status !== 200) {
-                console.log(response);
                 return;
             }
-//            console.log(response)
         } catch (error) {
-            console.log(error);
         }
     };
     
@@ -334,12 +316,10 @@ const Home = () => {
 
             });
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
         }
         catch (error) {
-            console.log(error);
         }
     };
 
@@ -352,18 +332,15 @@ const Home = () => {
 
             });
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
         }
         catch (error) {
-            console.log(error);
         }
     };
 
     const updatelinecontainer = async () => {
         try {
-            console.log(machine.line)
             const response = await apiClient.post(`http://${process.env.REACT_APP_API}/UpdateLineContainer`, {
                 name: containerName,
                 line: machine.line,
@@ -371,12 +348,10 @@ const Home = () => {
 
             });
             if (response.status != 200) {
-                console.log(response);
                 return;
             }
         }
         catch (error) {
-            console.log(error);
         }
     };
 
@@ -398,7 +373,6 @@ const Home = () => {
 
     const sendDataPanasonicServer = async (_binQr) => {
         try {
-            //console.log(badgeno, stationname, frombinname,tobinname,activity);
             let stationname = containerName.split('-').slice(0, 3).join('-');
             
             const response = await apiClient.post(`http://${apiTarget}/api/pid/step1`, {
@@ -411,14 +385,12 @@ const Home = () => {
                 activity: 'Waiting Dispose To Step 2'
 
             });
-            console.log(response)
             if (response.status != 200) {
                 if (response.error || response.err)
                 {
                     alert("Fail saving to pidsg")
                     return null;
                 }
-                console.log(response);
                 return;
             }
             const result = response.data.result;
@@ -426,7 +398,6 @@ const Home = () => {
             
         }
         catch (error) {
-            console.log(error);
             return null;
         }
     };
