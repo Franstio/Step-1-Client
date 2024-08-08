@@ -423,6 +423,9 @@ const Home = () => {
         setScanData('');
         setFinalStep(false);
     }
+    useEffect(()=>{
+        scanData = scanData.trim().replace(' ','');
+    },[scanData]);
     const mapRoleToLabel = (role) => {
         const roleMap = {
           admin: 'Administrator',
