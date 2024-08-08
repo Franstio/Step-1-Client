@@ -100,7 +100,7 @@ const Home = () => {
         });
     },[socket])
     const handleScan = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanBadgeid`, { badgeId: scanData })
+        apiClient.post(`http://${process.env.REACT_APP_API}/ScanBadgeid`, { badgeId: scanData.trim().replace(" ","") })
             .then(res => {
                 if (res.data.error) {
                     setScanData('');
@@ -121,7 +121,7 @@ const Home = () => {
     };
 
     const handleScan1 = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData })
+        apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ","") })
             .then((res) => {
                 if (res.data.error) {
                     setScanData('');
@@ -162,7 +162,7 @@ const Home = () => {
     };
 
     const handleScan2 = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData })
+        apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ","") })
             .then((res) => {
                 if (res.data.error) {
                     setScanData('');
@@ -423,9 +423,6 @@ const Home = () => {
         setScanData('');
         setFinalStep(false);
     }
-    useEffect(()=>{
-        scanData = scanData.trim().replace(' ','');
-    },[scanData]);
     const mapRoleToLabel = (role) => {
         const roleMap = {
           admin: 'Administrator',
