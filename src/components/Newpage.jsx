@@ -207,7 +207,7 @@ const Home = () => {
 
     
     const handleKeyPress = async (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key == 'Space' || e.key == 'space') {
             if (user == null)
                 handleScan();
             else if (isFinalStep) {
