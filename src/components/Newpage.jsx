@@ -208,7 +208,8 @@ const Home = () => {
     
     const handleKeyPress = async (e) => {
         console.log(e.key);
-        if (e.key === 'Enter' || e.key == ' ') {
+        if (e.key === 'Enter' || e.key == ' ' || e.key =='Tab') {
+            e.preventDefault();
             if (user == null)
                 handleScan();
             else if (isFinalStep) {
@@ -639,6 +640,7 @@ const Home = () => {
                                 type="text"
                                 autoFocus="true"
                                 onChange={e => setScanData(e.target.value)}
+                                onT
                                 value={scanData}
                                 name="text"
                                 onKeyDown={e => handleKeyPress(e)}
