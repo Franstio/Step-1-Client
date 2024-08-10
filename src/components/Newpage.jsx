@@ -31,7 +31,7 @@ const apiClient = axios.create({
 
 
 const Home = () => {
-    const [apiTarget,setApiTarget] = useState(/*'192.168.54.128'*/process.env.REACT_APP_PIDSG);
+    const [apiTarget, setApiTarget] = useState(/*'192.168.54.128'*/process.env.REACT_APP_PIDSG);
     const [user, setUser] = useState(null);
     const [transaction, setTransaction] = useState([]);
     const [Scales4Kg, setScales4Kg] = useState({});
@@ -67,7 +67,7 @@ const Home = () => {
     const [logindate, setlogindate] = useState('');
     const [bottomLockHostData, setBottomLockData] = useState({ binId: '', hostname: '' });
     const [socket, setSocket] = useState(); // Sesuaikan dengan alamat server
-    const [btnInfo,setBtnInfo] = useState(true);
+    const [btnInfo, setBtnInfo] = useState(true);
     const btnRef = useRef();
     const navigation = [
         { name: 'Dashboard', href: '#', current: false },
@@ -89,18 +89,18 @@ const Home = () => {
             backgroundColor: value > 70 ? '#f44336' : theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
         },
     }));
-    useEffect(()=>{
+    useEffect(() => {
         setSocket(io(`http://${process.env.REACT_APP_API}`));
-    },[])
-    useEffect(()=>{
+    }, [])
+    useEffect(() => {
         if (!socket)
             return;
-        socket.on('UpdateStep1',()=>{
+        socket.on('UpdateStep1', () => {
             getTransactionList();
         });
-    },[socket])
+    }, [socket])
     const handleScan = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanBadgeid`, { badgeId: scanData.trim().replace(" ","") })
+        apiClient.post(`http://${process.env.REACT_APP_API}/ScanBadgeid`, { badgeId: scanData.trim().replace(" ", "") })
             .then(res => {
                 if (res.data.error) {
                     setScanData('');
@@ -121,7 +121,7 @@ const Home = () => {
     };
 
     const handleScan1 = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ","") })
+        apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ", "") })
             .then((res) => {
                 if (res.data.error) {
                     setScanData('');
@@ -144,10 +144,10 @@ const Home = () => {
                         setContainerName(res.data.machine.name)
                         setBinDispose(res.data.machine.waste.bin);
                         setwastenamebin(res.data.machine.waste);
-                        
-                
+
+
                         setFinalStep(true);
-                        
+
                     } else {
                         alert("Countainer not found");
                         setUser(null);
@@ -161,54 +161,59 @@ const Home = () => {
             .catch(err => console.error(err));
     };
 
-    const handleScan2 = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ","") })
-            .then((res) => {
-                if (res.data.error) {
+    const handleScan2 = async () => {
+        try {
+            const res = apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ", "") });
+            if (res.data.error) {
+                setScanData('');
+                alert(res.data.error);
+            } else {
+                if (res.data.container) {
+                    /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
+                        alert("Waste Mismatch");
+                        return;
+                    }*/
+                    setWaste(res.data.container.waste);
+                    setmessage('');
+                    setTypeCollection(res.data.container.type);
+                    setWastename(res.data.container.waste.name);
+                    setwasteid(res.data.container.waste.name);
                     setScanData('');
-                    alert(res.data.error);
+                    setIsSubmitAllowed(false);
+                    setContainer(res.data.container);
+                    setType(res.data.container.type);
+                    //setShowModalInfo(true);
+                    setContainerName(res.data.container.name)
+                    setBinDispose(res.data.container.waste.bin);
+                    setwastenamebin(res.data.container.waste)
+                    setbinInd(res.data.container.name);
+                    setFinalStep(true);
+                    setShowModalInfo(true);
+
+                    await saveDataTransaksi();
+                    await sendDataToStep2();
+                    //updatelinecontainer();
+
                 } else {
-                    if (res.data.container) {
-                        /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
-                            alert("Waste Mismatch");
-                            return;
-                        }*/
-                        setWaste(res.data.container.waste);
-                        setmessage('');
-                        setTypeCollection(res.data.container.type);
-                        setWastename(res.data.container.waste.name);                
-                        setwasteid(res.data.container.waste.name);
-                        setScanData('');
-                        setIsSubmitAllowed(false);
-                        setContainer(res.data.container);
-                        setType(res.data.container.type);
-                        //setShowModalInfo(true);
-                        setContainerName(res.data.container.name)
-                        setBinDispose(res.data.container.waste.bin);
-                        setwastenamebin(res.data.container.waste)
-                        setbinInd(res.data.container.name);
-                        setFinalStep(true);
-                        setShowModalInfo(true);
-                        //updatelinecontainer();
-                        
-                    } else {
-                        alert("Container not found");
-                        setUser(null);
-                        setContainer(null);
-                        setContainerName(res.data.name || '');
-                        setScanData('');
-                        setIsSubmitAllowed(false);
-                    }
+                    alert("Container not found");
+                    setUser(null);
+                    setContainer(null);
+                    setContainerName(res.data.name || '');
                     setScanData('');
+                    setIsSubmitAllowed(false);
                 }
-            })
-            .catch(err => console.error(err));
+                setScanData('');
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
     };
 
-    
+
     const handleKeyPress = async (e) => {
         console.log(e.key);
-        if (e.key === 'Enter' || e.key == ' ' || e.key =='Tab') {
+        if (e.key === 'Enter' || e.key == ' ' || e.key == 'Tab') {
             e.preventDefault();
             if (user == null)
                 handleScan();
@@ -223,12 +228,11 @@ const Home = () => {
             }
         }
     };
-    useEffect(()=>{
-        if (showModalInfo)
-        {
+    useEffect(() => {
+        if (showModalInfo) {
             btnRef.current.focus();
         }
-    },[showModalInfo])
+    }, [showModalInfo])
     /* const saveDataTransaksi = async () => {
         try {
             const response = await apiClient.post(`http://localhost:5000/SaveTransaksi`, {
@@ -247,7 +251,7 @@ const Home = () => {
         catch (error) {
         }
     };  */
-  const saveDataTransaksi = async () => {
+    const saveDataTransaksi = async () => {
         try {
             let binQr = machine.name;
             if (container.IdWaste === 1) {
@@ -256,33 +260,29 @@ const Home = () => {
                 binQr = parts.join('-');
             } else if (container.IdWaste === 2) {
                 const parts = binQr.split('-');
-                parts.splice(2, 0, 'SD'); 
-                binQr = parts.join('-'); 
+                parts.splice(2, 0, 'SD');
+                binQr = parts.join('-');
             } else if (container.IdWaste === 3) {
                 const parts = binQr.split('-');
-                parts.splice(2, 0, 'CR'); 
-                binQr = parts.join('-'); 
-            } else  {
+                parts.splice(2, 0, 'CR');
+                binQr = parts.join('-');
+            } else {
             }
-            try
-            {
+            try {
                 const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${container.containerId}&bin_qr=${binQr}&bin=${binQr}`);
-                if (_res.status!=200)
+                if (_res.status != 200)
                     return;
             }
-            catch(err)
-            {
+            catch (err) {
                 alert("Transaksi terakhir sudah ada dan belum selesai");
             }
             const result = await sendDataPanasonicServer(binQr);
-            if (result ==null || result == 'Fail')
-            {
+            if (result == null || result == 'Fail') {
                 alert("Error from Pidsg, cancelling operation");
                 return;
             }
             let response = undefined;
-            try
-            {
+            try {
                 response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
                     payload: {
                         badgeId: user.badgeId,
@@ -295,19 +295,18 @@ const Home = () => {
                     }
                 });
             }
-            catch (err)
-            {
-                return;   
+            catch (err) {
+                return;
             }
             await getTransactionList();
-    
+
             if (response && response.status !== 200) {
                 return;
             }
         } catch (error) {
         }
     };
-    
+
 
     const sendDataToStep2 = async () => {
         try {
@@ -358,7 +357,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-      getTransactionList();
+        getTransactionList();
     }, []);
 
     const getTransactionList = async () => {
@@ -376,20 +375,19 @@ const Home = () => {
     const sendDataPanasonicServer = async (_binQr) => {
         try {
             let stationname = containerName.split('-').slice(0, 3).join('-');
-            
+
             const response = await apiClient.post(`http://${apiTarget}/api/pid/step1`, {
                 badgeno: user.badgeId,
                 logindate: "",
                 stationname: stationname,
                 frombinname: _binQr,
                 tobinname: containerName,
-                weight: '0',    
+                weight: '0',
                 activity: 'Waiting Dispose To Step 2'
 
             });
             if (response.status != 200) {
-                if (response.error || response.err)
-                {
+                if (response.error || response.err) {
                     alert("Fail saving to pidsg")
                     return null;
                 }
@@ -397,23 +395,21 @@ const Home = () => {
             }
             const result = response.data.result;
             return result;
-            
+
         }
         catch (error) {
             return null;
         }
     };
-    
+
     const handleCancelInfo = async () => {
         if (!btnInfo)
             return;
         setBtnInfo(false);
-        await saveDataTransaksi();
-        await sendDataToStep2();
         //await updatelinecontainer();
         cancelInfo();
     };
-    const cancelInfo = ()=>{
+    const cancelInfo = () => {
         setBtnInfo(true);
         setShowModalInfo(false);
         setUser(null);
@@ -426,35 +422,35 @@ const Home = () => {
     }
     const mapRoleToLabel = (role) => {
         const roleMap = {
-          admin: 'Administrator',
-          user: 'User',
-          editor: 'Editor',
+            admin: 'Administrator',
+            user: 'User',
+            editor: 'Editor',
         };
         return roleMap[role] || role;
-      };
+    };
 
-      const renderActions = (params) => (
+    const renderActions = (params) => (
         <div>
-    
-          <IconButton>
-            <EditIcon />
-          </IconButton>
-    
-    
-          <IconButton >
-            <DeleteIcon />
-          </IconButton>
-    
+
+            <IconButton>
+                <EditIcon />
+            </IconButton>
+
+
+            <IconButton >
+                <DeleteIcon />
+            </IconButton>
+
         </div>
-      );
+    );
 
     const users = [
-        { id: 1, nama: 'John Doe', badgeid: '123e4567-e89b-12d3-a456-426614174000', role: 'solder dust',status: 'Pending', createdat:'2024-1-1 08:12.00wib' },
+        { id: 1, nama: 'John Doe', badgeid: '123e4567-e89b-12d3-a456-426614174000', role: 'solder dust', status: 'Pending', createdat: '2024-1-1 08:12.00wib' },
         { id: 2, nama: 'Jane Smith', badgeid: '123e4567-e89b-12d3-a456-426614174001', role: 'cutting' },
         { id: 3, nama: 'Alice Johnson', badgeid: '123e4567-e89b-12d3-a456-426614174002', role: 'cutting' },
         { id: 4, nama: 'Bob Brown', badgeid: '123e4567-e89b-12d3-a456-426614174003', role: 'cutting' },
         { id: 5, nama: 'Carol White', badgeid: '123e4567-e89b-12d3-a456-426614174004', role: 'cutting' },
-      ];
+    ];
 
     const CustomLinearProgress = ({ value }) => {
         return (
@@ -600,37 +596,37 @@ const Home = () => {
                 )}
             </Disclosure>
             <div className='bg-[#f4f6f9] p-5'>
-            <div className="grid grid-cols-3 grid-flow-col gap-5">
+                <div className="grid grid-cols-3 grid-flow-col gap-5">
                     <div className="row-span-2 col-span-2">
-                    <div style={{ height: 400, width: '100%' }}>
-                    <DataGrid
-                      rows={transaction}
-                      columns={[
-                        { field: 'id', headerName: 'No', width: 100 },
-                        { field: 'employeeName', headerName: 'Employee Name', width: 150 },
-                        { field: 'bin_qr', headerName: 'Machine Id', width: 150 },
-                        { field: 'containerName', headerName: 'Bin Id', width: 150 },
-                        {
-                          field: 'wasteName',
-                          headerName: 'Waste',
-                          width: 150
-                        },
-                        {
-                            field: 'createdAt',
-                            headerName: 'DateTime',
-                            width: 250
-                          },
-                        {
-                          field: "status",
-                          headerName: "Status",
-                          width: 250,
-                          //renderCell: renderActions,
+                        <div style={{ height: 400, width: '100%' }}>
+                            <DataGrid
+                                rows={transaction}
+                                columns={[
+                                    { field: 'id', headerName: 'No', width: 100 },
+                                    { field: 'employeeName', headerName: 'Employee Name', width: 150 },
+                                    { field: 'bin_qr', headerName: 'Machine Id', width: 150 },
+                                    { field: 'containerName', headerName: 'Bin Id', width: 150 },
+                                    {
+                                        field: 'wasteName',
+                                        headerName: 'Waste',
+                                        width: 150
+                                    },
+                                    {
+                                        field: 'createdAt',
+                                        headerName: 'DateTime',
+                                        width: 250
+                                    },
+                                    {
+                                        field: "status",
+                                        headerName: "Status",
+                                        width: 250,
+                                        //renderCell: renderActions,
 
-                        },
-                      ]}
-                      getRowId={(row) => row.uuid || row.id} // Use uuid or id as the row id
-                    />
-                  </div>
+                                    },
+                                ]}
+                                getRowId={(row) => row.uuid || row.id} // Use uuid or id as the row id
+                            />
+                        </div>
                     </div>
                     <div className="row-span-3">
                         <div className='flex-1 p-4 border rounded bg-white h-full'>
@@ -647,41 +643,41 @@ const Home = () => {
                                 className="block w-full rounded-md border-0 py-2 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 placeholder=""
                             />
-                            
+
                             <div className='text-lg mt-5'>
-                            <p>Employee Name: {user?.username} </p>
-                            <p>Machine Id: {machine?.name}</p>
-                            <p>Bin Id: {binId}</p>
-                            <p>Waste: {wastedid}</p>
-                            
+                                <p>Employee Name: {user?.username} </p>
+                                <p>Machine Id: {machine?.name}</p>
+                                <p>Bin Id: {binId}</p>
+                                <p>Waste: {wastedid}</p>
+
                             </div>
                         </div>
-                        </div>
-                        
+                    </div>
+
                 </div>
             </div>
             <div className='flex justify-start'>
-                    {showModalInfo && (
-                        <div className="fixed z-10 inset-0 overflow-y-auto">
-                            <div className="flex items-center justify-center min-h-screen">
-                                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                {showModalInfo && (
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
-                                <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
-                                    <div className="text-center mb-4">
+                            <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                                <div className="text-center mb-4">
 
-                                    </div>
-                                    <form>
-                                        <Typography variant="h4" align="center" gutterBottom>
-                                            Data Tersimpan!</Typography>
-                                        <div className="flex justify-center mt-5">
-                                            <button type="button"  disabled={!btnInfo}  ref={btnRef} onKeyDown={handleCancelInfo} onMouseDown={handleCancelInfo} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Oke</button>
-                                        </div>
-                                    </form>
                                 </div>
+                                <form>
+                                    <Typography variant="h4" align="center" gutterBottom>
+                                        Data Tersimpan!</Typography>
+                                    <div className="flex justify-center mt-5">
+                                        <button type="button" disabled={!btnInfo} ref={btnRef} onKeyDown={handleCancelInfo} onMouseDown={handleCancelInfo} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Oke</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+            </div>
             <footer className='flex-1 rounded border flex justify-center gap-40 p-3 bg-white'  >
                 <p>Server Status: 192.168.1.5 Online</p>
             </footer>
