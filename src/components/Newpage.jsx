@@ -191,7 +191,7 @@ const Home = () => {
                     setShowModalInfo(true);
 
                     await saveDataTransaksi();
-                    await sendDataToStep2();
+                    //await sendDataToStep2();
                     //updatelinecontainer();
 
                 } else {
@@ -271,15 +271,11 @@ const Home = () => {
             try {
                 const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${container.containerId}&bin_qr=${binQr}&bin=${binQr}`);
                 if (_res.status != 200)
-                    return;
+                    return false;
             }
             catch (err) {
                 alert("Transaksi terakhir sudah ada dan belum selesai");
-            }
-            const result = await sendDataPanasonicServer(binQr);
-            if (result == null || result == 'Fail') {
-                alert("Error from Pidsg, cancelling operation");
-                return;
+                return false;
             }
             let response = undefined;
             try {
@@ -293,17 +289,34 @@ const Home = () => {
                         idscraplog: result,
                         bin: binQr
                     }
-                });
+                });    
+                const result = await sendDataPanasonicServer(binQr);
+                if (result == null || result == 'Fail') {
+                    try
+                    {
+                        const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
+                    }
+                    catch (err)
+                    {
+                        alert("Deleting Last Transaction Failed, please check database for further information");
+                        return false;
+                    }
+                    alert("Error from Pidsg, cancelling operation");
+                    return false;
+                }
+                
+                return true;
             }
             catch (err) {
-                return;
+                return false;
             }
             await getTransactionList();
 
             if (response && response.status !== 200) {
-                return;
+                return false;
             }
         } catch (error) {
+            return false;
         }
     };
 
@@ -317,10 +330,12 @@ const Home = () => {
 
             });
             if (response.status != 200) {
-                return;
+                return false;
             }
+            return true;
         }
         catch (error) {
+            return false;
         }
     };
 
@@ -443,14 +458,6 @@ const Home = () => {
 
         </div>
     );
-
-    const users = [
-        { id: 1, nama: 'John Doe', badgeid: '123e4567-e89b-12d3-a456-426614174000', role: 'solder dust', status: 'Pending', createdat: '2024-1-1 08:12.00wib' },
-        { id: 2, nama: 'Jane Smith', badgeid: '123e4567-e89b-12d3-a456-426614174001', role: 'cutting' },
-        { id: 3, nama: 'Alice Johnson', badgeid: '123e4567-e89b-12d3-a456-426614174002', role: 'cutting' },
-        { id: 4, nama: 'Bob Brown', badgeid: '123e4567-e89b-12d3-a456-426614174003', role: 'cutting' },
-        { id: 5, nama: 'Carol White', badgeid: '123e4567-e89b-12d3-a456-426614174004', role: 'cutting' },
-    ];
 
     const CustomLinearProgress = ({ value }) => {
         return (
