@@ -163,7 +163,7 @@ const Home = () => {
 
     const handleScan2 = async () => {
         try {
-            const res = apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ", "") });
+            const res = await apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ", "") });
             if (res.data.error) {
                 setScanData('');
                 alert(res.data.error);
