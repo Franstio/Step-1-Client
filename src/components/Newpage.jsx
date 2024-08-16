@@ -279,7 +279,7 @@ const Home = () => {
             }
             let response = undefined;
             try {    
-                const result = await sendDataPanasonicServer(binQr);
+                const result = await sendDataPanasonicServer(binQr,dataContainer.name);
 
                 if (result == null || result == 'Fail') {
                     /*try
@@ -390,16 +390,16 @@ const Home = () => {
         setTransaction(transactionsWithWasteName);
     };
 
-    const sendDataPanasonicServer = async (_binQr) => {
+    const sendDataPanasonicServer = async (_binQr,_containerName) => {
         try {
-            let stationname = containerName.split('-').slice(0, 3).join('-');
+            let stationname = _containerName.split('-').slice(0, 3).join('-');
 
             const response = await apiClient.post(`http://${apiTarget}/api/pid/step1`, {
                 badgeno: user.badgeId,
                 logindate: "",
                 stationname: stationname,
                 frombinname: _binQr,
-                tobinname: containerName,
+                tobinname: _containerName,
                 weight: '0',
                 activity: 'Waiting Dispose To Step 2'
 
