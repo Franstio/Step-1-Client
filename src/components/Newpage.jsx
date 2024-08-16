@@ -117,7 +117,7 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.log(err));
     };
 
     const handleScan1 = () => {
@@ -158,7 +158,7 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.log(err));
     };
 
     const handleScan2 = async () => {
@@ -206,7 +206,7 @@ const Home = () => {
             }
         }
         catch (err) {
-            console.error(err);
+            console.log(err);
         }
     };
 

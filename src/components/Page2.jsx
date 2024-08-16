@@ -98,7 +98,7 @@ const Home = () => {
                 value: value
             });
         } catch (error) {
-            console.error(error.response.data.msg);
+            console.log(error.response.data.msg);
         }
     }
     
@@ -129,7 +129,7 @@ const Home = () => {
                     }
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.log(err));
     };
 
 
