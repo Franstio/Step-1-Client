@@ -278,7 +278,22 @@ const Home = () => {
                 return false;
             }
             let response = undefined;
-            try {
+            try {    
+                const result = await sendDataPanasonicServer(binQr);
+
+                if (result == null || result == 'Fail') {
+                    /*try
+                    {
+                        const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
+                    }
+                    catch (err)
+                    {
+                        alert("Deleting Last Transaction Failed, please check database for further information");
+                        return false;
+                    }*/
+                    alert("Error from Pidsg, cancelling operation");
+                    return false;
+                }
                 response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
                     payload: {
                         badgeId: user.badgeId,
@@ -289,21 +304,7 @@ const Home = () => {
                         idscraplog: result,
                         bin: binQr
                     }
-                });    
-                const result = await sendDataPanasonicServer(binQr);
-                if (result == null || result == 'Fail') {
-                    try
-                    {
-                        const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
-                    }
-                    catch (err)
-                    {
-                        alert("Deleting Last Transaction Failed, please check database for further information");
-                        return false;
-                    }
-                    alert("Error from Pidsg, cancelling operation");
-                    return false;
-                }
+                });
             }
             catch (err) {
                 console.log(err);
