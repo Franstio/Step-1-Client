@@ -190,7 +190,7 @@ const Home = () => {
                     setFinalStep(false);
                     setShowModalInfo(true);
 
-                    await saveDataTransaksi();
+                    await saveDataTransaksi(res.data.container);
                     //await sendDataToStep2();
                     //updatelinecontainer();
 
@@ -251,25 +251,25 @@ const Home = () => {
         catch (error) {
         }
     };  */
-    const saveDataTransaksi = async () => {
+    const saveDataTransaksi = async (dataContainer) => {
         try {
             let binQr = machine.name;
-            if (container.IdWaste === 1) {
+            if (dataContainer.IdWaste === 1) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'SP');
                 binQr = parts.join('-');
-            } else if (container.IdWaste === 2) {
+            } else if (dataContainer.IdWaste === 2) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'SD');
                 binQr = parts.join('-');
-            } else if (container.IdWaste === 3) {
+            } else if (dataContainer.IdWaste === 3) {
                 const parts = binQr.split('-');
                 parts.splice(2, 0, 'CR');
                 binQr = parts.join('-');
             } else {
             }
             try {
-                const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${container.containerId}&bin_qr=${binQr}&bin=${binQr}`);
+                const _res = await apiClient.get(`http://${process.env.REACT_APP_API}/CekTransaksi?idContainer=${dataContainer.containerId}&bin_qr=${binQr}&bin=${binQr}`);
                 if (_res.status != 200)
                     return false;
             }
@@ -282,8 +282,8 @@ const Home = () => {
                 response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
                     payload: {
                         badgeId: user.badgeId,
-                        idContainer: container.containerId,
-                        IdWaste: container.IdWaste,
+                        idContainer: dataContainer.containerId,
+                        IdWaste: dataContainer.IdWaste,
                         bin_qr: binQr,
                         status: 'Waiting Dispose To Step 2',
                         idscraplog: result,
