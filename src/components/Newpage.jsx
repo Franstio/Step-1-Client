@@ -312,9 +312,12 @@ const Home = () => {
             await getTransactionList();
 
             if (response && response.status !== 200) {
+                console.log(response);
                 return false;
             }
+            return true;
         } catch (error) {
+            console.log(error);
             return false;
         }
     };
