@@ -187,7 +187,7 @@ const Home = () => {
                     setBinDispose(res.data.container.waste.bin);
                     setwastenamebin(res.data.container.waste)
                     setbinInd(res.data.container.name);
-                    setFinalStep(true);
+                    setFinalStep(false);
                     setShowModalInfo(true);
 
                     await saveDataTransaksi();
@@ -304,10 +304,9 @@ const Home = () => {
                     alert("Error from Pidsg, cancelling operation");
                     return false;
                 }
-                
-                return true;
             }
             catch (err) {
+                console.log(err);
                 return false;
             }
             await getTransactionList();
