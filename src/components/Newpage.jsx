@@ -25,7 +25,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
 import { io } from "socket.io-client";
 const apiClient = axios.create({
-    withCredentials: false
+    withCredentials: false,
+    validateStatus: function (status){
+        return status ==409;
+    }
 });
 
 
@@ -120,46 +123,48 @@ const Home = () => {
             .catch(err => console.log(err));
     };
 
-    const handleScan1 = () => {
-        apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ", "") })
-            .then((res) => {
-                if (res.data.error) {
+    const handleScan1 = async () => {
+        try {
+            const res = await apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ", "") });
+            if (res.data.error ) {
+                setScanData('');
+                alert(res.data.error);
+            } else {
+                if (res.data.machine) {
+                    /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
+                        alert("Waste Mismatch");
+                        return;
+                    }*/
+                    setWaste(res.data.machine.waste);
+                    setmessage('');
+                    setTypeCollection(res.data.machine.type);
+                    setWastename(res.data.machine.waste.name);
                     setScanData('');
-                    alert(res.data.error);
+                    setIsSubmitAllowed(false);
+                    setMachine(res.data.machine);
+                    setType(res.data.machine.type);
+                    //setShowModalInfo(true);
+                    setContainerName(res.data.machine.name)
+                    setBinDispose(res.data.machine.waste.bin);
+                    setwastenamebin(res.data.machine.waste);
+
+
+                    setFinalStep(true);
+
                 } else {
-                    if (res.data.machine) {
-                        /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
-                            alert("Waste Mismatch");
-                            return;
-                        }*/
-                        setWaste(res.data.machine.waste);
-                        setmessage('');
-                        setTypeCollection(res.data.machine.type);
-                        setWastename(res.data.machine.waste.name);
-                        setScanData('');
-                        setIsSubmitAllowed(false);
-                        setMachine(res.data.machine);
-                        setType(res.data.machine.type);
-                        //setShowModalInfo(true);
-                        setContainerName(res.data.machine.name)
-                        setBinDispose(res.data.machine.waste.bin);
-                        setwastenamebin(res.data.machine.waste);
-
-
-                        setFinalStep(true);
-
-                    } else {
-                        alert("Countainer not found");
-                        setUser(null);
-                        setMachine(null);
-                        setContainerName(res.data.name || '');
-                        setScanData('');
-                        setIsSubmitAllowed(false);
-                    }
+                    alert("Countainer not found");
+                    setUser(null);
+                    setMachine(null);
+                    setContainerName(res.data.name || '');
+                    setScanData('');
+                    setIsSubmitAllowed(false);
                 }
-            })
-            .catch(err => console.log(err));
-    };
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
     const handleScan2 = async () => {
         try {
@@ -278,8 +283,8 @@ const Home = () => {
                 return false;
             }
             let response = undefined;
-            try {    
-                const result = await sendDataPanasonicServer(binQr,dataContainer.name);
+            try {
+                const result = await sendDataPanasonicServer(binQr, dataContainer.name);
 
                 if (result == null || result == 'Fail') {
                     /*try
@@ -390,7 +395,7 @@ const Home = () => {
         setTransaction(transactionsWithWasteName);
     };
 
-    const sendDataPanasonicServer = async (_binQr,_containerName) => {
+    const sendDataPanasonicServer = async (_binQr, _containerName) => {
         try {
             let stationname = _containerName.split('-').slice(0, 3).join('-');
 
