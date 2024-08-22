@@ -27,7 +27,7 @@ import { io } from "socket.io-client";
 const apiClient = axios.create({
     withCredentials: false,
     validateStatus: function (status){
-        return status ==409;
+        return status < 500;
     }
 });
 
