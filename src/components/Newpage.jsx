@@ -184,7 +184,7 @@ const Home = () => {
                     const _res1 = await saveDataTransaksi(res.data.container);
                     if (!_res1)
                     {
-                        toggleErrorModal({show:false,message:"Transaksi Gagal, Data tidak tersimpan"});
+                        toggleErrorModal({show:true,message:"Transaksi Gagal, Data tidak tersimpan"});
                         return;
                     }
                     setWaste(res.data.container.waste);
