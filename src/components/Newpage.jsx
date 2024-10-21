@@ -41,6 +41,7 @@ const Home = () => {
     const [Scales50Kg, setScales50Kg] = useState({});
     const [isFinalStep, setFinalStep] = useState(false);
     const [scanData, setScanData] = useState('');
+    const [errModal,toggleErrorModal] = useState({show:false,message:''});
     const [container, setContainer] = useState(null);
     const [machine, setMachine] = useState(null);
     const [waste, setWaste] = useState(null);
@@ -108,14 +109,14 @@ const Home = () => {
             .then(res => {
                 if (res.data.error) {
                     setScanData('');
-                    alert(res.data.error);
+                    toggleErrorModal({show:true,message:res.data.error});
                 } else {
                     if (res.data.user) {
                         setUser(res.data.user);
                         setScanData('');
                         setmessage("Scan Bin Machine/Bin");
                     } else {
-                        alert("User not found");
+                        toggleErrorModal({message:"User not found",show:true});
                         setUser(null);
                         setScanData('');
                     }
@@ -129,7 +130,7 @@ const Home = () => {
             const res = await apiClient.post(`http://${process.env.REACT_APP_API}/ScanMachine/`, { machineId: scanData.trim().replace(" ", "") });
             if (res.data.error ) {
                 setScanData('');
-                alert(res.data.error);
+                toggleErrorModal({show:true,message:res.data.error});
             } else {
                 if (res.data.machine) {
                     /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
@@ -153,7 +154,7 @@ const Home = () => {
                     setFinalStep(true);
 
                 } else {
-                    alert("Countainer not found");
+                    toggleErrorModal({show:true,message:"Container Not Found"});
                     setUser(null);
                     setMachine(null);
                     setContainerName(res.data.name || '');
@@ -172,13 +173,20 @@ const Home = () => {
             const res = await apiClient.post(`http://${process.env.REACT_APP_API}/ScanContainer/`, { containerId: scanData.trim().replace(" ", "") });
             if (res.data.error) {
                 setScanData('');
-                alert(res.data.error);
+                toggleErrorModal({show:true,message:res.data.error});
             } else {
                 if (res.data.container) {
                     /*if ( waste != null && res.data.container.IdWaste != waste.IdWaste ) {
                         alert("Waste Mismatch");
                         return;
                     }*/
+                    
+                    const _res1 = await saveDataTransaksi(res.data.container);
+                    if (!_res1)
+                    {
+                        toggleErrorModal({show:false,message:"Transaksi Gagal, Data tidak tersimpan"});
+                        return;
+                    }
                     setWaste(res.data.container.waste);
                     setmessage('');
                     setTypeCollection(res.data.container.type);
@@ -196,12 +204,11 @@ const Home = () => {
                     setFinalStep(false);
                     setShowModalInfo(true);
 
-                    await saveDataTransaksi(res.data.container);
                     //await sendDataToStep2();
                     //updatelinecontainer();
 
                 } else {
-                    alert("Container not found");
+                    toggleErrorModal({show:true,"Container Not Fount":res.data.error});
                     setUser(null);
                     setContainer(null);
                     setContainerName(res.data.name || '');
@@ -280,7 +287,8 @@ const Home = () => {
                     return false;
             }
             catch (err) {
-                alert("Transaksi terakhir sudah ada dan belum selesai");
+                
+                toggleErrorModal({show:true,message:"Transaksi terakhir sudah ada dan belum selesai"});
                 return false;
             }
             let response = undefined;
@@ -297,7 +305,8 @@ const Home = () => {
                         alert("Deleting Last Transaction Failed, please check database for further information");
                         return false;
                     }*/
-                    alert("Error from Pidsg, cancelling operation");
+                    
+                    toggleErrorModal({show:true,message:"Error from Pidsg, cancelling operation"});
                     return false;
                 }
                 response = await apiClient.post(`http://${process.env.REACT_APP_API}/SaveTransaksi`, {
@@ -412,7 +421,8 @@ const Home = () => {
             });
             if (response.status != 200) {
                 if (response.error || response.err) {
-                    alert("Fail saving to pidsg")
+                    
+                    toggleErrorModal({show:true,message:"Fail saving to pidsg"});
                     return null;
                 }
                 return;
@@ -690,6 +700,28 @@ const Home = () => {
                                         Data Tersimpan!</Typography>
                                     <div className="flex justify-center mt-5">
                                         <button type="button" disabled={!btnInfo} ref={btnRef} onKeyDown={handleCancelInfo} onMouseDown={handleCancelInfo} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Oke</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <div className='flex justify-start'>
+                {errModal.show && (
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+                            <div className="bg-white rounded p-8 max-w-md mx-auto z-50">
+                                <div className="text-center mb-4">
+                                    
+                                </div>
+                                <form>
+                                    <Typography variant="h4" align="center" gutterBottom>
+                                        {errModal.message}</Typography>
+                                    <div className="flex justify-center mt-5">
+                                        <button type="button" onClick={()=>{toggleErrorModal(prev=>({message:'',show:false}))}} className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Ok</button>
                                     </div>
                                 </form>
                             </div>
