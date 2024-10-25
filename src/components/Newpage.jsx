@@ -27,6 +27,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 const apiClient = axios.create({
   withCredentials: false,
+  timeout:2000,
   validateStatus: function (status) {
     return status < 500;
   },
@@ -308,8 +309,9 @@ const Home = () => {
       let response = undefined;
       try {
         const result = await sendDataPanasonicServer(binQr, dataContainer.name);
-
+        const error = [];
         if (result == null || result == "Fail") {
+            error.push('PIDSG');
           /*try
                     {
                         const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
@@ -320,14 +322,14 @@ const Home = () => {
                         return false;
                     }*/
 
-          toggleErrorModal({
+          /*toggleErrorModal({
             show: true,
             message: "Error from Pidsg, cancelling operation",
-          });
+          });*/
         }
         const status =
           result == null || result == "Fail"
-            ? "PENDING|PIDSG"
+            ? "PENDING"
             : "Waiting Dispose To Step 2";
         response = await apiClient.post(
           `http://${process.env.REACT_APP_API}/SaveTransaksi`,
@@ -341,6 +343,7 @@ const Home = () => {
               idscraplog: result,
               bin: binQr,
             },
+            error: error
           }
         );
       } catch (err) {
