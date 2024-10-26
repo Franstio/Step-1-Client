@@ -321,7 +321,7 @@ const Home = () => {
         let result = await sendDataPanasonicServer(binQr, dataContainer.name);
         const error = [];
         if (result == null || result == "Fail") {
-          result = null;
+          result = "";
           error.push("PIDSG");
           /*try
                     {
