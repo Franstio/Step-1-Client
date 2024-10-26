@@ -27,12 +27,22 @@ import axios from "axios";
 import { io } from "socket.io-client";
 const apiClient = axios.create({
   withCredentials: false,
-  timeout:2000,
+  timeout: 2000,
   validateStatus: function (status) {
     return status < 500;
   },
 });
-
+const step1Client = axios.create({
+  withCredentials: false,
+  timeout: 2000,
+  validateStatus: function (status) {
+    return status < 500;
+  },
+});
+step1Client.interceptors.response.use(
+  (res) => res,
+  (err) => err
+);
 const Home = () => {
   const [apiTarget, setApiTarget] = useState(
     /*'192.168.54.128'*/ process.env.REACT_APP_PIDSG
@@ -308,11 +318,11 @@ const Home = () => {
       }
       let response = undefined;
       try {
-        const result = await sendDataPanasonicServer(binQr, dataContainer.name);
+        let result = await sendDataPanasonicServer(binQr, dataContainer.name);
         const error = [];
         if (result == null || result == "Fail") {
-          result  = null;
-            error.push('PIDSG');
+          result = null;
+          error.push("PIDSG");
           /*try
                     {
                         const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
@@ -344,7 +354,7 @@ const Home = () => {
               idscraplog: result,
               bin: binQr,
             },
-            error: error
+            error: error,
           }
         );
       } catch (err) {
@@ -441,7 +451,7 @@ const Home = () => {
     try {
       let stationname = _containerName.split("-").slice(0, 3).join("-");
 
-      const response = await apiClient.post(
+      const response = await step1Client.post(
         `http://${apiTarget}/api/pid/step1`,
         {
           badgeno: user.badgeId,
