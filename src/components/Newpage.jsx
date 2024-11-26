@@ -311,6 +311,7 @@ const Home = () => {
         );
         if (_res.status != 200) return false;
       } catch (err) {
+        getTransactionList();
         toggleErrorModal({
           show: true,
           message: "Transaksi terakhir sudah ada dan belum selesai",
@@ -359,17 +360,20 @@ const Home = () => {
           }
         );
       } catch (err) {
+        getTransactionList();
         console.log(err);
         return false;
       }
       await getTransactionList();
 
       if (response && response.status !== 200) {
+        getTransactionList();
         console.log(response);
         return false;
       }
       return true;
     } catch (error) {
+      getTransactionList();
       console.log(error);
       return false;
     }
