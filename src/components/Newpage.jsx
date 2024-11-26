@@ -196,6 +196,7 @@ const Home = () => {
 
           const _res1 = await saveDataTransaksi(res.data.container);
           if (!_res1) {
+            getTransactionList();
             toggleErrorModal({
               show: true,
               message: "Transaksi Gagal, Data tidak tersimpan",
@@ -458,7 +459,8 @@ const Home = () => {
           toggleErrorModal({ show: true, message: "Fail saving to pidsg" });
           return null;
         }
-        return;
+        console.log(response);
+        return null;
       }
       const result = response.data.result;
       return result;
@@ -787,6 +789,7 @@ const Home = () => {
                           message: "",
                           show: false,
                         }));
+                        getTransactionList();
                       }}
                       className="bg-gray-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
                     >
