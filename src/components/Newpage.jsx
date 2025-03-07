@@ -27,7 +27,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 const apiClient = axios.create({
   withCredentials: false,
-  timeout: 2000,
+  timeout: 5000,
   validateStatus: function (status) {
     return status < 500;
   },
@@ -253,6 +253,7 @@ const Home = () => {
   const handleKeyPress = async (e) => {
     console.log(e.key);
     if (e.key === "Enter" || e.key == " " || e.key == "Tab") {
+      inputRef.current.disabled = true;
       e.preventDefault();
       if (user == null) handleScan();
       else if (isFinalStep) {
@@ -263,6 +264,7 @@ const Home = () => {
       } else {
         handleScan1();
       }
+      inputRef.current.disabled = false;
     }
   };
   useEffect(() => {
@@ -320,30 +322,6 @@ const Home = () => {
       }
       let response = undefined;
       try {
-        let result = await sendDataPanasonicServer(binQr, dataContainer.name);
-        const error = [];
-        if (result == null || result == "Fail") {
-          result = "";
-          error.push("PIDSG");
-          /*try
-                    {
-                        const delRes = await apiClient.delete(`http://${process.env.REACT_APP_API}/CancelTransaksi/${response.id}`);
-                    }
-                    catch (err)
-                    {
-                        alert("Deleting Last Transaction Failed, please check database for further information");
-                        return false;
-                    }*/
-
-          /*toggleErrorModal({
-            show: true,
-            message: "Error from Pidsg, cancelling operation",
-          });*/
-        }
-        const status =
-          result == null || result == "Fail"
-            ? "PENDING"
-            : "Waiting Dispose To Step 2";
         response = await apiClient.post(
           `http://${process.env.REACT_APP_API}/SaveTransaksi`,
           {
@@ -352,11 +330,10 @@ const Home = () => {
               idContainer: dataContainer.containerId,
               IdWaste: dataContainer.IdWaste,
               bin_qr: binQr,
-              status: status,
-              idscraplog: result,
+              status: "",
+              idscraplog:"",
               bin: binQr,
             },
-            error: error,
           }
         );
       } catch (err) {
@@ -728,7 +705,6 @@ const Home = () => {
                 type="text"
                 autoFocus="true"
                 onChange={(e) => setScanData(e.target.value)}
-                onT
                 value={scanData}
                 name="text"
                 ref={inputRef}
