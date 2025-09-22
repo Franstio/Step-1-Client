@@ -203,7 +203,14 @@ const Home = () => {
                         alert("Waste Mismatch");
                         return;
                     }*/
-
+          if (res.data.container.IdWaste != machine.IdWaste)
+          {
+            toggleErrorModal({
+              show: true,
+              message: "Transaksi Gagal, Waste Berbeda",
+            });
+            return;
+          }
           const _res1 = await saveDataTransaksi(res.data.container);
           if (!_res1) {
             getTransactionList();
